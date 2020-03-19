@@ -11,7 +11,8 @@ namespace razorReport.Helper
 {
     public class ExcelReportHelper{
 
-         public static ExcelPackage CreateExcelPackage(FileInfo file)
+        public readonly static string NairaSymbol = ((char)8358).ToString();
+        public static ExcelPackage CreateExcelPackage(FileInfo file)
         {
             //If file exist delete before proceeding.
             if (file.Exists)
@@ -32,6 +33,112 @@ namespace razorReport.Helper
         {
             worksheet.Cells[startRow, 1, startRow + numberOfSpace, 20].Merge = true;
             return startRow + numberOfSpace+1;
+        }
+
+        public static int AddProcessingHeader(int startRow,DateTime processingTime,string bankName,DateTime deposiTime,ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 3].Merge = true;
+            excelWorkSheet.Cells[startRow, 4, startRow, 7].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value="DATE OF PROCESSING";
+            excelWorkSheet.Cells[startRow, 4].Value = processingTime.ToString();
+
+            excelWorkSheet.Cells[startRow+1, 1, startRow+1, 3].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 4, startRow+1, 7].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 1].Value = "BANK NAME";
+            excelWorkSheet.Cells[startRow+1, 4].Value = bankName;
+
+            excelWorkSheet.Cells[startRow + 2, 1, startRow + 2, 3].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 4, startRow + 2, 7].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "DATE OF DEPOSIT";
+            excelWorkSheet.Cells[startRow + 2, 4].Value = deposiTime.ToString();
+
+            return startRow + 3;
+        }
+
+        public static int AddProcessingDetail(int startRow,string BWAuditTrail,DateTime processingStartDate,DateTime processingStopDate,string bankRepresentative,string comment,ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value = "PROCESSING DETAILS";
+            excelWorkSheet.Row(startRow).Height = 40;
+            excelWorkSheet.Cells[startRow, 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Bold =true ;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Size = 15;
+
+
+            startRow = startRow + 1;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 6].Merge = true;
+            excelWorkSheet.Cells[startRow, 7, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value = "BW Audit Trail";
+            excelWorkSheet.Cells[startRow, 7].Value = BWAuditTrail;
+
+
+            excelWorkSheet.Cells[startRow+1, 1, startRow+1, 6].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 7, startRow+1,15].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 1].Value = "Processing Date";
+            excelWorkSheet.Cells[startRow+1, 7].Value = processingStartDate.ToString()+" - "+processingStopDate.ToString();
+
+            excelWorkSheet.Cells[startRow + 2, 1, startRow + 2, 6].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 7, startRow + 2, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "Bank Representative Witness";
+            excelWorkSheet.Cells[startRow+2, 7].Value = bankRepresentative;
+
+
+            excelWorkSheet.Cells[startRow+3, 1, startRow+3, 15].Merge = true;
+            excelWorkSheet.Cells[startRow+3, 1].Value = "Comment :  "+comment;
+
+
+            return startRow + 4;
+        }
+
+        public static int AddBriefSummary(int startRow,DateTime reportDate,DateTime depositDate,string depositBank,string declearedValue,Dictionary<string,double> denominations,ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value = "BRIEF SUMMARY";
+            excelWorkSheet.Row(startRow).Height = 40;
+            excelWorkSheet.Cells[startRow, 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Bold = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Size = 15;
+            string nairaSymbol = ((char)8358).ToString();
+
+            startRow = startRow + 1;
+
+            var denominationsString = "";
+            foreach(var deno in denominations)
+            {
+                denominationsString=denominationsString + deno.Key + ": " +nairaSymbol+deno.Value.ToString("#,##0") + " ";
+            }
+            excelWorkSheet.Cells[startRow, 1, startRow, 7].Merge = true;
+            excelWorkSheet.Cells[startRow, 8, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value ="Report Date:";
+            excelWorkSheet.Cells[startRow, 8].Value ="   "+reportDate.ToString();
+            excelWorkSheet.Cells[startRow, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+
+            excelWorkSheet.Cells[startRow+1, 1, startRow+1, 7].Merge = true;
+            excelWorkSheet.Cells[startRow + 1, 8, startRow + 1, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 1, 1].Value = "Deposit Date:";
+            excelWorkSheet.Cells[startRow + 1, 8].Value ="   "+ depositDate.ToString();
+            excelWorkSheet.Cells[startRow+1, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+
+            excelWorkSheet.Cells[startRow + 2, 1, startRow + 2, 7].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 8, startRow + 2, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "Deposit Bank:";
+            excelWorkSheet.Cells[startRow + 2, 8].Value = "  "+ depositBank;
+            excelWorkSheet.Cells[startRow + 2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 7].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 8, startRow + 3, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 1].Value = "Decleared Value:";
+            excelWorkSheet.Cells[startRow + 3, 8].Value = "  " + declearedValue;
+            excelWorkSheet.Cells[startRow + 3, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+
+            excelWorkSheet.Cells[startRow + 4, 1, startRow + 4, 7].Merge = true;
+            excelWorkSheet.Cells[startRow + 4, 8, startRow + 4, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 4, 1].Value = "Denominations:";
+            excelWorkSheet.Cells[startRow + 4, 8].Value = "  "+denominationsString;
+            excelWorkSheet.Cells[startRow + 4, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+
+            return startRow + 5;
         }
 
         public static int AddSealDecription(int startRow, List<SealDescription> sealDecriptions,ExcelWorksheet spreedSheet)
@@ -216,5 +323,222 @@ namespace razorReport.Helper
 
             return startRow + 8;
         }
+
+        public static int AddSortingSummary(int startRow,double declearedValue,double postSortingValue,double shortage,double overages,double counterfeits,double Mixup,ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value = "SORTING SUMMARY";
+            excelWorkSheet.Row(startRow).Height = 40;
+            excelWorkSheet.Cells[startRow, 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Bold = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Size = 15;
+            startRow = startRow + 1;
+
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 8].Merge = true;
+            excelWorkSheet.Cells[startRow, 9, startRow, 15].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Value = "Decleared Value:";
+            excelWorkSheet.Cells[startRow, 9].Value =NairaSymbol+ declearedValue.ToString("#,##0");
+
+
+
+            excelWorkSheet.Cells[startRow+1, 1, startRow+1, 8].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 9, startRow+1, 15].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 1].Value = "Post Sorting Value:";
+            excelWorkSheet.Cells[startRow+1, 9].Value =NairaSymbol+ postSortingValue.ToString("#,##0");
+
+            excelWorkSheet.Cells[startRow + 2, 1, startRow + 2, 8].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 9, startRow + 2, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "Shortages:";
+            excelWorkSheet.Cells[startRow + 2, 9].Value =NairaSymbol+ shortage.ToString("#,##0");
+
+
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 8].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 9, startRow + 3, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 1].Value = "Overages:";
+            excelWorkSheet.Cells[startRow + 3, 9].Value = NairaSymbol+ overages.ToString("#,##0");
+
+
+            excelWorkSheet.Cells[startRow + 4, 1, startRow + 4, 8].Merge = true;
+            excelWorkSheet.Cells[startRow + 4, 9, startRow + 4, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 4, 1].Value = "Counterfeits:";
+            excelWorkSheet.Cells[startRow + 4, 9].Value =NairaSymbol+ counterfeits.ToString("#,##0");
+
+            excelWorkSheet.Cells[startRow + 5, 1, startRow + 5, 8].Merge = true;
+            excelWorkSheet.Cells[startRow + 5, 9, startRow + 5, 15].Merge = true;
+            excelWorkSheet.Cells[startRow + 5, 1].Value = "Mix-ups:";
+            excelWorkSheet.Cells[startRow + 5, 9].Value =NairaSymbol +Mixup.ToString("#,##0");
+
+            return startRow + 7;
+        }
+
+        public static int AddDailyTransaction(int startRow,Dictionary<string,double> bankOpenning,List<NamedCashDenomnation> inflowEvacuation,List<NamedCashDenomnation> unNamedCashDenomnations, ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Merge = true;
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Font.Color.SetColor(Color.Black);
+            excelWorkSheet.Cells[startRow, 1].Value = "DAILY TRANSACTIONS LOCAL CURRENCY (NGN)";
+
+            excelWorkSheet.Cells[startRow + 1, 1, startRow+1, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1, startRow+2, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 4].Merge = true;
+
+            excelWorkSheet.Cells[startRow + 1, 1].Value = "";
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "BANK OPENNING BALANCE";
+            excelWorkSheet.Cells[startRow + 3, 1].Value = "INFLOW/EVACUATION";
+            int column = 5;
+        
+            foreach(var bankOp in bankOpenning)
+            {
+                excelWorkSheet.Cells[startRow + 1, column].Value = bankOp.Key;
+                excelWorkSheet.Cells[startRow + 2, column].Value = bankOp.Value.ToString("#,##0");
+              
+                column =column+ 1;
+            }
+            excelWorkSheet.Cells[startRow+2, 1, startRow+2, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow+2, 1, startRow+2, 20].Style.Fill.BackgroundColor.SetColor(Color.Black);
+            excelWorkSheet.Cells[startRow+2, 1, startRow+2, 20].Style.Font.Color.SetColor(Color.White);
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 20].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            startRow= startRow + 4;
+            startRow = AddSubSection(startRow, inflowEvacuation, excelWorkSheet);
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 5, startRow, 20].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType=ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;        
+            excelWorkSheet.Cells[startRow, 1].                                                                                                                                                                                                                                                                                                                                                                                                                                            Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "Mutilated Evacuation";
+
+
+            // startRow = AddSubSection(startRow, unNamedCashDenomnations, excelWorkSheet);
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "Evacuation in BW Wrapper";
+
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "Evacuation in PAPER NOTE";
+
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "TO BE RETURNED TO BRANCH";
+
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "RETURNED TO VAULT";
+
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "CASH SWAP";
+
+            startRow = startRow + 2;
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+            excelWorkSheet.Cells[startRow+1, 1, startRow+1, 4].Merge = true;
+            excelWorkSheet.Cells[startRow, 1,startRow+1,4].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1,startRow+1,4].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+            excelWorkSheet.Cells[startRow, 1].Value = "OTHERS:";
+            excelWorkSheet.Cells[startRow+1, 1].Value = "TRANSFER FROM ILUPEJU";
+
+            startRow = startRow + 3;
+            return startRow;
+        }
+
+        private static int AddSubSection(int startRow, List<NamedCashDenomnation> subsectionList,ExcelWorksheet excelWorkSheet)
+        {
+            foreach (var ife in subsectionList)
+            {
+                excelWorkSheet.Cells[startRow, 1, startRow, 4].Merge = true;
+                excelWorkSheet.Cells[startRow, 1].Value = ife.Name;
+                excelWorkSheet.Cells[startRow, 5].Value = ife.CashDenomination["#1000"];
+                excelWorkSheet.Cells[startRow, 6].Value = ife.CashDenomination["#500"];
+                excelWorkSheet.Cells[startRow, 7].Value = ife.CashDenomination["#200"];
+                excelWorkSheet.Cells[startRow, 8].Value = ife.CashDenomination["#100"];
+                excelWorkSheet.Cells[startRow, 9].Value = ife.CashDenomination["#50"];
+                excelWorkSheet.Cells[startRow, 10].Value = ife.CashDenomination["#20"];
+                excelWorkSheet.Cells[startRow, 11].Value = ife.CashDenomination["#10"];
+                excelWorkSheet.Cells[startRow, 12].Value = ife.CashDenomination["#5"];
+                excelWorkSheet.Cells[startRow, 13].Value = ife.CashDenomination["#2"];
+                excelWorkSheet.Cells[startRow, 14].Value = ife.CashDenomination["#1"];
+                excelWorkSheet.Cells[startRow, 15].Value = ife.CashDenomination["50k"];
+                excelWorkSheet.Cells[startRow, 16].Value = ife.CashDenomination["25k"];
+                excelWorkSheet.Cells[startRow, 17].Value = ife.CashDenomination["10k"];
+                excelWorkSheet.Cells[startRow, 18].Value = ife.CashDenomination["1k"];
+                excelWorkSheet.Cells[startRow, 19].Value = ife.CashDenomination["TOTAL"];
+                startRow = startRow + 1;
+            }
+            return startRow;
+        }
+
+        public static int AddBankBrokerReport(int startRow,string bankHeading, Dictionary<string, CurrencyType> currencies, ExcelWorksheet excelWorkSheet)
+        {
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Merge = true;
+
+            excelWorkSheet.Cells[startRow, 1].Value = bankHeading;
+            excelWorkSheet.Cells[startRow, 1].Style.Font.Bold = true;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(153, 204, 255));
+            excelWorkSheet.Row(startRow).Height = 40;
+            excelWorkSheet.Cells[startRow, 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            startRow += 1;
+            int column = 5;
+
+
+
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+            excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Font.Color.SetColor(Color.White);
+
+            excelWorkSheet.Cells[startRow + 1, 1, startRow + 1, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 1, 1].Value = "MINT";
+            excelWorkSheet.Cells[startRow + 2, 1, startRow + 2, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 2, 1].Value = "ATM";
+            excelWorkSheet.Cells[startRow + 3, 1, startRow + 3, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 3, 1].Value = "CAC";
+            excelWorkSheet.Cells[startRow + 4, 1, startRow + 4, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 4, 1].Value = "CAD";
+            excelWorkSheet.Cells[startRow + 5, 1, startRow + 5, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 5, 1].Value = "AE";
+            excelWorkSheet.Cells[startRow + 6, 1, startRow + 6, 4].Merge = true;
+            excelWorkSheet.Cells[startRow + 6, 1].Value = "At COB";
+
+            foreach (var currency in currencies)
+            {
+                excelWorkSheet.Cells[startRow, column].Value = currency.Key;
+                excelWorkSheet.Cells[startRow + 1, column].Value = currency.Value == null ? "" : currency.Value.Mint.ToString("#,##0");
+                excelWorkSheet.Cells[startRow + 1, column].AutoFitColumns();
+                excelWorkSheet.Cells[startRow + 2, column].Value = currency.Value == null ? "" : currency.Value.ATM.ToString("#,##0");
+                excelWorkSheet.Cells[startRow + 3, column].Value = currency.Value == null ? "" : currency.Value.CAC.ToString("#,##0");
+                excelWorkSheet.Cells[startRow + 4, column].Value = currency.Value == null ? "" : currency.Value.CAD.ToString("#,##0");
+                excelWorkSheet.Cells[startRow + 5, column].Value = currency.Value == null ? "" : currency.Value.AE.ToString("#,##0");
+                excelWorkSheet.Cells[startRow + 6, column].Value = currency.Value == null ? "" : currency.Value.ATCOB.ToString("#,##0");
+
+                column = column + 1;
+
+            }
+
+            return startRow + 7;
+        }
+
     }
 }
