@@ -10,4 +10,19 @@
     <form method="POST">
         <input type="submit" value="Report" />
     </form>
+
+     <form method="POST">
+        <input type="hidden" asp-for="ReportType" value="Broker" />
+        <input type="submit" value="Broker Report" />
+    </form>
+
+    <form method="POST">
+        <input type="hidden" asp-for="ReportType" value="Consolidated" />
+        <input type="submit" value="Consolidated Report" />
+    </form>
+
+    <form method="POST">
+        <input type="hidden" asp-for="ReportType" value="Daily-Transaction" />
+        <input type="submit" value="Daily Trans Report" />
+    </form>
 </div>
