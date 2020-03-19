@@ -24,6 +24,90 @@ namespace razorReport.Pages
             _hostingEnvironment = hostingEnvironment;
         }
 
+        private CashInStockDec ss = new CashInStockDec {
+            ax1000 = 1000,
+            ax500 = 29043,
+            ax200 = 34434,
+            ax100 = 33231,
+            ax50  = 344343,
+            ax20 = 3434,
+            ax10 = 9089,
+            ax5 = 43434,
+            ax2 = 12323,
+            ax1 = 23982,
+            ax1coin = 12123,
+            ax0_5 = 1212,
+            ax0_25 = 32323,
+            ax0_2 =32323,
+            ax0_1 = 3223,
+
+            a1000 = 1000,
+            a500 = 29043,
+            a200 = 34434,
+            a100 = 33231,
+            a50  = 344343,
+            a20 = 3434,
+            a10 = 9089,
+            a5 = 43434,
+            a2 = 12323,
+            a1 = 23982,
+            a1coin = 12123,
+            a0_5 = 1212,
+            a0_25 = 32323,
+            a0_2 =32323,
+            a0_1 = 3223,
+
+            f1000 = 1000,
+            f500 = 29043,
+            f200 = 34434,
+            f100 = 33231,
+            f50  = 344343,
+            f20 = 3434,
+            f10 = 9089,
+            f5 = 43434,
+            f2 = 12323,
+            f1 = 23982,
+            f1coin = 12123,
+            f0_5 = 1212,
+            f0_25 = 32323,
+            f0_2 =32323,
+            f0_1 = 3223,
+
+
+            u1000 = 1000,
+            u500 = 29043,
+            u200 = 34434,
+            u100 = 33231,
+            u50  = 344343,
+            u20 = 3434,
+            u10 = 9089,
+            u5 = 43434,
+            u2 = 12323,
+            u1 = 23982,
+            u1coin = 12123,
+            u0_5 = 1212,
+            u0_25 = 32323,
+            u0_2 =32323,
+            u0_1 = 3223,
+
+            m1000 = 1000,
+            m500 = 29043,
+            m200 = 34434,
+            m100 = 33231,
+            m50  = 344343,
+            m20 = 3434,
+            m10 = 9089,
+            m5 = 43434,
+            m2 = 12323,
+            m1 = 23982,
+            m1coin = 12123,
+            m0_5 = 1212,
+            m0_25 = 32323,
+            m0_2 =32323,
+            m0_1 = 3223,
+            
+        };
+
         private FileInfo GenerateBrokerReport() {
             var fileName = @"broker-report.xlsx";
             FileInfo file = new FileInfo(Path.Combine(_hostingEnvironment.WebRootPath, fileName));
@@ -87,6 +171,10 @@ namespace razorReport.Pages
                 {@"1k", null},
                 {@"TOTAL",new CurrencyType{Mint= 2219431791,CAC=1416492500,ATM=4150000,CAD=114013615,AE=120077000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=3937164906  } }
                 }, spreedSheet
+            );
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddBankBrokerReport(startRow, "GUARANTY TRUST BANK PLC BOTH CASH CENTER", DataHelper.ConvertData(ss), spreedSheet
             );
             package.Save();
             return file;

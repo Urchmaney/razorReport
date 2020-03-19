@@ -10,6 +10,8 @@ namespace razorReport.Models
 
         public double CAC { get; set; }
 
+        public double MUT { get; set; }             
+
         public double AE { get; set; }
 
         public double Today { get; set; }
