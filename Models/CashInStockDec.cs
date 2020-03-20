@@ -15,11 +15,11 @@ namespace razorReport.Models
         public decimal ax5 { get; set; }
         public decimal ax2 { get; set; }
         public decimal ax1 { get; set; }
-        public decimal ax1coin { get; set; }
         public decimal ax0_5 { get; set; }
         public decimal ax0_25 { get; set; }
         public decimal ax0_2 { get; set; }
         public decimal ax0_1 { get; set; }
+        public decimal ax1coin { get; set; }
 
         // public decimal a10000 { get; set; }
         // public decimal a5000 { get; set; }
@@ -34,11 +34,11 @@ namespace razorReport.Models
         public decimal a5 { get; set; }
         public decimal a2 { get; set; }
         public decimal a1 { get; set; }
-        public decimal a1coin { get; set; }
         public decimal a0_5 { get; set; }
         public decimal a0_25 { get; set; }
         public decimal a0_2 { get; set; }
         public decimal a0_1 { get; set; }
+        public decimal a1coin { get; set; }
 
         // public decimal f10000 { get; set; }
         // public decimal f5000 { get; set; }
@@ -53,11 +53,11 @@ namespace razorReport.Models
         public decimal f5 { get; set; }
         public decimal f2 { get; set; }
         public decimal f1 { get; set; }
-        public decimal f1coin { get; set; }
         public decimal f0_5 { get; set; }
         public decimal f0_25 { get; set; }
         public decimal f0_2 { get; set; }
         public decimal f0_1 { get; set; }
+        public decimal f1coin { get; set; }
 
         // public decimal u10000 { get; set; }
         // public decimal u5000 { get; set; }
@@ -72,11 +72,11 @@ namespace razorReport.Models
         public decimal u5 { get; set; }
         public decimal u2 { get; set; }
         public decimal u1 { get; set; }
-        public decimal u1coin { get; set; }
         public decimal u0_5 { get; set; }
         public decimal u0_25 { get; set; }
         public decimal u0_2 { get; set; }
         public decimal u0_1 { get; set; }
+        public decimal u1coin { get; set; }
 
         // public decimal m10000 { get; set; }
         // public decimal m5000 { get; set; }
@@ -91,11 +91,11 @@ namespace razorReport.Models
         public decimal m5 { get; set; }
         public decimal m2 { get; set; }
         public decimal m1 { get; set; }
-        public decimal m1coin { get; set; }
         public decimal m0_5 { get; set; }
         public decimal m0_25 { get; set; }
         public decimal m0_2 { get; set; }
         public decimal m0_1 { get; set; }
+        public decimal m1coin { get; set; }
 
         // public decimal ae10000 { get; set; }
         // public decimal ae5000 { get; set; }
@@ -110,11 +110,11 @@ namespace razorReport.Models
         public decimal ae5 { get; set; }
         public decimal ae2 { get; set; }
         public decimal ae1 { get; set; }
-        public decimal ae1coin { get; set; }
         public decimal ae0_5 { get; set; }
         public decimal ae0_25 { get; set; }
         public decimal ae0_2 { get; set; }
         public decimal ae0_1 { get; set; }
+        public decimal ae1coin { get; set; }
         public decimal t { get; set; }
     }
 }
