@@ -25,7 +25,7 @@ namespace razorReport.Pages
         }
 
         private CashInStockDec ss = new CashInStockDec {
-            ax1000 = 1000,
+            ax1000 = 100993993,
             ax500 = 29043,
             ax200 = 34434,
             ax100 = 33231,
