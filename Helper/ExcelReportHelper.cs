@@ -12,7 +12,7 @@ namespace razorReport.Helper
     public class ExcelReportHelper{
 
         public readonly static string NairaSymbol = ((char)8358).ToString();
-        public static ExcelPackage CreateExcelPackage(FileInfo file)
+        private static ExcelPackage CreateExcelPackage(FileInfo file)
         {
             //If file exist delete before proceeding.
             if (file.Exists)
@@ -29,13 +29,13 @@ namespace razorReport.Helper
             return spreedSheet;
         }
 
-        public static int AddSpace(int startRow,int numberOfSpace,ExcelWorksheet worksheet)
+        private static int AddSpace(int startRow,int numberOfSpace,ExcelWorksheet worksheet)
         {
             worksheet.Cells[startRow, 1, startRow + numberOfSpace, 20].Merge = true;
             return startRow + numberOfSpace+1;
         }
 
-        public static int AddProcessingHeader(int startRow,DateTime processingTime,string bankName,DateTime deposiTime,ExcelWorksheet excelWorkSheet)
+        private static int AddProcessingHeader(int startRow,DateTime processingTime,string bankName,DateTime deposiTime,ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 3].Merge = true;
             excelWorkSheet.Cells[startRow, 4, startRow, 7].Merge = true;
@@ -55,7 +55,7 @@ namespace razorReport.Helper
             return startRow + 3;
         }
 
-        public static int AddProcessingDetail(int startRow,string BWAuditTrail,DateTime processingStartDate,DateTime processingStopDate,string bankRepresentative,string comment,ExcelWorksheet excelWorkSheet)
+        private static int AddProcessingDetail(int startRow,string BWAuditTrail,DateTime processingStartDate,DateTime processingStopDate,string bankRepresentative,string comment,ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
             excelWorkSheet.Cells[startRow, 1].Value = "PROCESSING DETAILS";
@@ -91,7 +91,7 @@ namespace razorReport.Helper
             return startRow + 4;
         }
 
-        public static int AddBriefSummary(int startRow,DateTime reportDate,DateTime depositDate,string depositBank,string declearedValue,Dictionary<string,double> denominations,ExcelWorksheet excelWorkSheet)
+        private static int AddBriefSummary(int startRow,DateTime reportDate,DateTime depositDate,string depositBank,string declearedValue,Dictionary<string,double> denominations,ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
             excelWorkSheet.Cells[startRow, 1].Value = "BRIEF SUMMARY";
@@ -141,7 +141,7 @@ namespace razorReport.Helper
             return startRow + 5;
         }
 
-        public static int AddSealDecription(int startRow, List<SealDescription> sealDecriptions,ExcelWorksheet spreedSheet)
+        private static int AddSealDecription(int startRow, List<SealDescription> sealDecriptions,ExcelWorksheet spreedSheet)
         {
             spreedSheet.Cells["A" + startRow.ToString()].Value = "Seal";
 
@@ -193,7 +193,7 @@ namespace razorReport.Helper
             return startRow;
         }
 
-        public static int AddDailyConsolidatedReport(int startRow, Dictionary<string, CurrencyType> currencies, ExcelWorksheet excelWorkSheet)
+        private static int AddDailyConsolidatedReport(int startRow, Dictionary<string, CurrencyType> currencies, ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 20].Merge = true;
             excelWorkSheet.Cells[startRow + 1, 1, startRow + 1, 20].Merge = true;
@@ -282,7 +282,7 @@ namespace razorReport.Helper
             return startRow + 15;
         }
 
-        public static int AddDominationProcess(int startRow, Dictionary<string, Domination> dominations, ExcelWorksheet workSheet)
+        private static int AddDominationProcess(int startRow, Dictionary<string, Domination> dominations, ExcelWorksheet workSheet)
         {
             workSheet.Cells[startRow, 1, startRow, 3].Merge = true;
             workSheet.Cells[startRow + 1, 1, startRow + 1, 3].Merge = true;
@@ -324,7 +324,7 @@ namespace razorReport.Helper
             return startRow + 8;
         }
 
-        public static int AddSortingSummary(int startRow,double declearedValue,double postSortingValue,double shortage,double overages,double counterfeits,double Mixup,ExcelWorksheet excelWorkSheet)
+        private static int AddSortingSummary(int startRow,double declearedValue,double postSortingValue,double shortage,double overages,double counterfeits,double Mixup,ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 15].Merge = true;
             excelWorkSheet.Cells[startRow, 1].Value = "SORTING SUMMARY";
@@ -372,7 +372,7 @@ namespace razorReport.Helper
             return startRow + 7;
         }
 
-        public static int AddDailyTransaction(int startRow,Dictionary<string,double> bankOpenning,List<NamedCashDenomnation> inflowEvacuation,List<NamedCashDenomnation> unNamedCashDenomnations, ExcelWorksheet excelWorkSheet)
+        private static int AddDailyTransaction(int startRow,Dictionary<string,double> bankOpenning,List<NamedCashDenomnation> inflowEvacuation,List<NamedCashDenomnation> unNamedCashDenomnations, ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 20].Merge = true;
             excelWorkSheet.Cells[startRow, 1, startRow, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -490,7 +490,7 @@ namespace razorReport.Helper
             return startRow;
         }
 
-        public static int AddBankBrokerReport(int startRow,string bankHeading, Dictionary<string, CurrencyType> currencies, ExcelWorksheet excelWorkSheet)
+        private static int AddBankBrokerReport(int startRow,string bankHeading, Dictionary<string, CurrencyType> currencies, ExcelWorksheet excelWorkSheet)
         {
             excelWorkSheet.Cells[startRow, 1, startRow, 20].Merge = true;
 
@@ -538,6 +538,237 @@ namespace razorReport.Helper
             }
 
             return startRow + 7;
+        }
+
+
+          //Make all neccessary calls to generate the broker-report.xlsx excel file
+        public static FileInfo GenerateBrokerReport(string rootPath,CashInStockDec stock) {
+            var fileName = @"broker-report.xlsx";
+            FileInfo file = new FileInfo(Path.Combine(rootPath, fileName));
+            var package = ExcelReportHelper.CreateExcelPackage(file);
+            var spreedSheet = ExcelReportHelper.CreateWorkSheet(package, "Report");
+            var startRow = 2;
+            startRow = ExcelReportHelper.AddBankBrokerReport(startRow, "GUARANTY TRUST BANK PLC ILUPEJU CASH CENTER", new Dictionary<string, CurrencyType>() {
+                {@"1,000",new CurrencyType{Mint=1526189000,CAC=28000000,ATM=2000000,CAD=70515000,AE=48852000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1735556000  } },
+                {@"500",new CurrencyType{Mint=668100000,CAC=1388150000,ATM=2150000,CAD=34267000,AE=70000000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=2165667000  } },
+                {@"200",new CurrencyType{Mint=11420000 ,CAC=320000 ,ATM=0,CAD=6526400,AE=1100000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=19366400  } },
+                {@"100",new CurrencyType{Mint=7790000,CAC=20000,ATM=0,CAD=1828800,AE=100000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=9738800  } },
+                {@"50",new CurrencyType{Mint=3425000 ,CAC=0,ATM=0,CAD=578550,AE=25000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB= 4028550  } },
+                {@"20",new CurrencyType{Mint=906000,CAC=0,ATM=0,CAD=242480,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1148480  } },
+                {@"10",new CurrencyType{Mint=4000,CAC=2000,ATM=0,CAD=53510,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=59510  } },
+                {@"5",new CurrencyType{Mint=511000,CAC=500,ATM=0,CAD=1875,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=513375  } },
+                {@"2",null },
+                {@"1", null },
+                {@"50k", null },
+                {@"25k", null },
+                {@"10k", null},
+                {@"1k", null},
+                {@"TOTAL",new CurrencyType{Mint= 2219431791,CAC=1416492500,ATM=4150000,CAD=114013615,AE=120077000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=3937164906  } }
+                }, spreedSheet
+            ); 
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 1, spreedSheet);
+            startRow = ExcelReportHelper.AddBankBrokerReport(startRow, "GUARANTY TRUST BANK PLC ISLAND CASH CENTER", new Dictionary<string, CurrencyType>() {
+                {@"1,000",new CurrencyType{Mint=1526189000,CAC=28000000,ATM=2000000,CAD=70515000,AE=48852000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1735556000  } },
+                {@"500",new CurrencyType{Mint=668100000,CAC=1388150000,ATM=2150000,CAD=34267000,AE=70000000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=2165667000  } },
+                {@"200",new CurrencyType{Mint=11420000 ,CAC=320000 ,ATM=0,CAD=6526400,AE=1100000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=19366400  } },
+                {@"100",new CurrencyType{Mint=7790000,CAC=20000,ATM=0,CAD=1828800,AE=100000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=9738800  } },
+                {@"50",new CurrencyType{Mint=3425000 ,CAC=0,ATM=0,CAD=578550,AE=25000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB= 4028550  } },
+                {@"20",new CurrencyType{Mint=906000,CAC=0,ATM=0,CAD=242480,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1148480  } },
+                {@"10",new CurrencyType{Mint=4000,CAC=2000,ATM=0,CAD=53510,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=59510  } },
+                {@"5",new CurrencyType{Mint=511000,CAC=500,ATM=0,CAD=1875,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=513375  } },
+                {@"2",null },
+                {@"1", null },
+                {@"50k", null },
+                {@"25k", null },
+                {@"10k", null},
+                {@"1k", null},
+                {@"TOTAL",new CurrencyType{Mint= 2219431791,CAC=1416492500,ATM=4150000,CAD=114013615,AE=120077000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=3937164906  } }
+                }, spreedSheet
+            );  
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddBankBrokerReport(startRow, "GUARANTY TRUST BANK PLC BOTH CASH CENTER", new Dictionary<string, CurrencyType>() {
+                {@"1,000",new CurrencyType{Mint=1526189000,CAC=28000000,ATM=2000000,CAD=70515000,AE=48852000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1735556000  } },
+                {@"500",new CurrencyType{Mint=668100000,CAC=1388150000,ATM=2150000,CAD=34267000,AE=70000000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=2165667000  } },
+                {@"200",new CurrencyType{Mint=11420000 ,CAC=320000 ,ATM=0,CAD=6526400,AE=1100000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=19366400  } },
+                {@"100",new CurrencyType{Mint=7790000,CAC=20000,ATM=0,CAD=1828800,AE=100000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=9738800  } },
+                {@"50",new CurrencyType{Mint=3425000 ,CAC=0,ATM=0,CAD=578550,AE=25000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB= 4028550  } },
+                {@"20",new CurrencyType{Mint=906000,CAC=0,ATM=0,CAD=242480,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1148480  } },
+                {@"10",new CurrencyType{Mint=4000,CAC=2000,ATM=0,CAD=53510,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=59510  } },
+                {@"5",new CurrencyType{Mint=511000,CAC=500,ATM=0,CAD=1875,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=513375  } },
+                {@"2",null },
+                {@"1", null },
+                {@"50k", null },
+                {@"25k", null },
+                {@"10k", null},
+                {@"1k", null},
+                {@"TOTAL",new CurrencyType{Mint= 2219431791,CAC=1416492500,ATM=4150000,CAD=114013615,AE=120077000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=3937164906  } }
+                }, spreedSheet
+            );
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddBankBrokerReport(startRow, "GUARANTY TRUST BANK PLC BOTH CASH CENTER", DataHelper.ConvertData(stock), spreedSheet
+            );
+            package.Save();
+            return file;
+        }
+
+        public static FileInfo GenerateDailyTransactionReport(string rootPath){
+            var fileName = @"daily-trans-report.xlsx";
+            FileInfo file = new FileInfo(Path.Combine(rootPath, fileName));
+            var package = ExcelReportHelper.CreateExcelPackage(file);
+            var spreedSheet = ExcelReportHelper.CreateWorkSheet(package, "Report");
+            var startRow = 2;
+            startRow = ExcelReportHelper.AddDailyTransaction(startRow, new Dictionary<string, double>{
+                {@"#1000",599679000  },
+                {@"#500",502852000  },
+                {@"#200",3505400},
+                {@"#100",2406800},
+                {@"#50",259250},
+                {@"#20",501540},
+                {@"#10",43960 },
+                {@"#5",48510  },
+                {@"#2",0  },
+                {@"#1",0  },
+                {@"50k",0  },
+                {@"25k",0  },
+                {@"10k",0  },
+                {@"1k",0  },
+                {@"TOTAL",1109296460  }
+            },new List<NamedCashDenomnation>{
+                new NamedCashDenomnation{ Name="OYINGBO",
+                    CashDenomination=new Dictionary<string, double>{
+                        { @"#1000",0  },
+                        { @"#500",0  },
+                        { @"#200",0},
+                        { @"#100",0},
+                        { @"#50",0},
+                        { @"#20",0},
+                        { @"#10",0 },
+                        { @"#5",0  },
+                        { @"#2",0  },
+                        { @"#1",0  },
+                        { @"50k",0  },
+                        { @"25k",0  },
+                        { @"10k",0  },
+                        { @"1k",0  },
+                        { @"TOTAL",0  }
+
+                    }
+                },
+                 new NamedCashDenomnation{ Name="AWOLOWO",
+                    CashDenomination=new Dictionary<string, double>{
+                        { @"#1000",0  },
+                        { @"#500",0  },
+                        { @"#200",0},
+                        { @"#100",0},
+                        { @"#50",0},
+                        { @"#20",0},
+                        { @"#10",0 },
+                        { @"#5",0  },
+                        { @"#2",0  },
+                        { @"#1",0  },
+                        { @"50k",0  },
+                        { @"25k",0  },
+                        { @"10k",0  },
+                        { @"1k",0  },
+                        { @"TOTAL",0  }
+
+
+                    }
+                 },
+                new NamedCashDenomnation{ Name="AWOLOWO",
+                    CashDenomination=new Dictionary<string, double>{
+                        { @"#1000",0  },
+                        { @"#500",0  },
+                        { @"#200",0},
+                        { @"#100",0},
+                        { @"#50",0},
+                        { @"#20",0},
+                        { @"#10",0 },
+                        { @"#5",0  },
+                        { @"#2",0  },
+                        { @"#1",0  },
+                        { @"50k",0  },
+                        { @"25k",0  },
+                        { @"10k",0  },
+                        { @"1k",0  },
+                        { @"TOTAL",0  }
+                    }
+                }
+            },null,spreedSheet);
+            package.Save();
+            return file;
+        }
+
+        public static FileInfo GenerateConsolidatedReport(string rootPath){
+            var fileName = @"consolidated-report.xlsx";
+            FileInfo file = new FileInfo(Path.Combine(rootPath, fileName));
+            var package = ExcelReportHelper.CreateExcelPackage(file);
+            var spreedSheet = ExcelReportHelper.CreateWorkSheet(package, "Report");
+            var startRow = 2;
+            startRow = ExcelReportHelper.AddDailyConsolidatedReport(startRow, new Dictionary<string, CurrencyType>() {
+
+                {@"1,000",new CurrencyType{Mint=1526189000,CAC=28000000,ATM=2000000,CAD=70515000,AE=48852000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1735556000  } },
+                {@"500",new CurrencyType{Mint=668100000,CAC=1388150000,ATM=2150000,CAD=34267000,AE=70000000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=2165667000  } },
+                {@"200",new CurrencyType{Mint=11420000 ,CAC=320000 ,ATM=0,CAD=6526400,AE=1100000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=19366400  } },
+                {@"100",new CurrencyType{Mint=7790000,CAC=20000,ATM=0,CAD=1828800,AE=100000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=9738800  } },
+                {@"50",new CurrencyType{Mint=3425000 ,CAC=0,ATM=0,CAD=578550,AE=25000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB= 4028550  } },
+                {@"20",new CurrencyType{Mint=906000,CAC=0,ATM=0,CAD=242480,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=1148480  } },
+                {@"10",new CurrencyType{Mint=4000,CAC=2000,ATM=0,CAD=53510,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=59510  } },
+                {@"5",new CurrencyType{Mint=511000,CAC=500,ATM=0,CAD=1875,AE=48852000,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=513375  } },
+                {@"2",new CurrencyType{Mint=306888,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB= 306888  } },
+                {@"1",new CurrencyType{Mint= 505013,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=505013  } },
+                {@"50k",new CurrencyType{Mint= 274758,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=274758  } },
+                {@"25k",new CurrencyType{Mint=8,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=8  } },
+                {@"10k",new CurrencyType{Mint=114,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=114  } },
+                {@"1k",new CurrencyType{Mint=10,CAC=0,ATM=0,CAD=0,AE=0,Today=0,CITI=0,Fidelity=0,DIAMOND=0,IBADANSWAP=0,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=10  } },
+                {@"TOTAL",new CurrencyType{Mint= 2219431791,CAC=1416492500,ATM=4150000,CAD=114013615,AE=120077000,Today=0,CITI=0,Fidelity=60000000,DIAMOND=0,IBADANSWAP=3000000,KANOSWAP=0,FCMB=0,UBA=0,ATCOB=3937164906  } },
+                
+
+            }, spreedSheet);
+            package.Save();
+            return file;
+        }
+
+        public static FileInfo GenerateOtherReport(string rootPath) {
+            var fileName = @"others-report.xlsx";
+            FileInfo file = new FileInfo(Path.Combine(rootPath, fileName));
+            var package = ExcelReportHelper.CreateExcelPackage(file);
+            var spreedSheet = ExcelReportHelper.CreateWorkSheet(package, "Report");
+            var startRow = 2;
+            startRow = ExcelReportHelper.AddSealDecription(startRow, new List<SealDescription>() { new SealDescription { AuditTrail="First of july\n brake shore",
+            Seal="1006",SortedValue="FEWFEW",DeclearedValue="DWEDF",Client="FCDF",ATM="DEWD"} }, spreedSheet);
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddDominationProcess(startRow, new Dictionary<string, Domination> {
+
+                {ExcelReportHelper.NairaSymbol+"1000", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"1000",Box=4,Counterfeit=0,Shortages=10,Mixup=0,Overages=0,Total=10} },
+                {ExcelReportHelper.NairaSymbol+"500", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"500",Box=1,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"200", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"200",Box=0,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"100", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"100",Box=0,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"50", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"50",Box=0,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"20", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"20",Box=0,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"10", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"10",Box=0,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {ExcelReportHelper.NairaSymbol+"5", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"5",Box=5,Counterfeit=0,Shortages=0,Mixup=0,Overages=0,Total=0} },
+                {"TOTAL", new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"5",Box=5,Counterfeit=0,Shortages=10,Mixup=0,Overages=0,Total=10} },
+                {"VALUE "+ExcelReportHelper.NairaSymbol, new Domination{ Denomination=ExcelReportHelper.NairaSymbol+"5",Box=17990000,Counterfeit=0,Shortages=10000,Mixup=0,Overages=0,Total=10000} },
+            }, spreedSheet);
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddProcessingHeader(startRow, DateTime.Now, "Sterling Bank Plc", DateTime.Now, spreedSheet);
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddBriefSummary(startRow, DateTime.Now, DateTime.Now, "Heritage Banking Company Ltd", ExcelReportHelper.NairaSymbol + "200000000", new Dictionary<string, double> { { "1000", 15000 }, { "500", 5000000 } }, spreedSheet);
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddProcessingDetail(startRow, "170619B1346411", DateTime.Now, DateTime.Now, "K. abayomi", "", spreedSheet);
+
+            startRow = ExcelReportHelper.AddSpace(startRow, 2, spreedSheet);
+            startRow = ExcelReportHelper.AddSortingSummary(startRow, 20000000, 20000000, 0, 0, 0, 0, spreedSheet);
+            package.Save();
+            return file;
         }
 
     }
